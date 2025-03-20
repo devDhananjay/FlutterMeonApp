@@ -1,0 +1,33 @@
+name: kyc_flutter_app
+description: "A new Flutter project."
+
+# Prevent package from being accidentally published to pub.dev
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# Version and build number for your application
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+# Dependencies that your package needs in order to work
+dependencies:
+  flutter:
+    sdk: flutter
+  # webview_flutter: ^3.0.0
+  webview_flutter: ^4.4.4
+  cupertino_icons: ^1.0.8
+  flutter_meon_kyc: ^1.0.4
+  flutter_meon_rekyc: ^1.0.2
+  permission_handler: ^11.4.0
+  flutter_inappwebview: ^6.1.5
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+# Flutter-specific settings
+flutter:
+  uses-material-design: true
