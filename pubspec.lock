@@ -146,10 +146,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_meon_kyc
-      sha256: "94a8fbf76d4ba113f0069bf260cdf8aa36fe9fcc323b07abc92cbe660468ccd0"
+      sha256: d344485da013c4f289b1a852054cd9e3d23248cbea994cbe90f2096dfa4237a7
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -465,18 +465,18 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_android
-      sha256: "631093a7fbd93e9690ac61d8c8f3e857efbc189fc33f712b9ad6c01a623517ef"
+      sha256: "0a42444056b24ed832bdf3442d65c5194f6416f7e782152384944053c2ecc9a3"
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.3"
+    version: "4.10.0"
   webview_flutter_platform_interface:
     dependency: transitive
     description:
       name: webview_flutter_platform_interface
-      sha256: d937581d6e558908d7ae3dc1989c4f87b786891ab47bb9df7de548a151779d8d
+      sha256: "63d26ee3aca7256a83ccb576a50272edd7cfc80573a4305caa98985feb493ee0"
       url: "https://pub.dev"
     source: hosted
-    version: "2.10.0"
+    version: "2.14.0"
   webview_flutter_wkwebview:
     dependency: transitive
     description:
