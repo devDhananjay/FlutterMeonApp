@@ -16,7 +16,7 @@ class AadharPanScreenState extends State<AadharPanScreen> {
   final config = const DigiLockerConfig(
     companyName: 'democapital',
     secretToken: 'cy7Kw2rWqdzVo2KPxlU0ymd9uRQKPSsb',
-    redirectUrl: 'https://your-redirect-url.com',
+    redirectUrl: 'https://rajkaran.com/thankyou.html',
     documents: 'aadhaar,pan',
     panName: '',
     panNo: '',

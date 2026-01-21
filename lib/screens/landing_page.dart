@@ -3,6 +3,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'kyc_verification_screen.dart';
 import 'aadhar_pan_screen.dart';
 import 'meon_kyc_screen.dart';
+import 'digilocker_screen.dart';
+import 'meon_ipo_screen.dart';
 
 // Landing Page - Home Screen with Navigation Cards
 class LandingPage extends StatelessWidget {
@@ -16,13 +18,15 @@ class LandingPage extends StatelessWidget {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Top Row: Two Cards Side by Side
-              Row(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                // Top Row: KYC Verification and Aadhar & Pan API
+                Row(
                 children: [
                   // Card 1: KYC Verification
                   Expanded(
@@ -62,28 +66,78 @@ class LandingPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              // Bottom Card: KYC Package
-              _buildNavigationCard(
-                context: context,
-                icon: Icons.security,
-                title: 'KYC Package',
-                color: Colors.green,
-                onTap: () async {
-                  // Request permissions before navigating
-                  bool permissionsGranted = await _requestPermissions(context);
-                  if (permissionsGranted) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MeonKYCScreen(),
-                      ),
-                    );
-                  }
-                },
+              // Bottom Row: KYC Package and Digi Locker
+              Row(
+                children: [
+                  // Card 3: KYC Package
+                  Expanded(
+                    child: _buildNavigationCard(
+                      context: context,
+                      icon: Icons.security,
+                      title: 'KYC Package',
+                      color: Colors.green,
+                      onTap: () async {
+                        // Request permissions before navigating
+                        bool permissionsGranted = await _requestPermissions(context);
+                        if (permissionsGranted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MeonKYCScreen(),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  // Card 4: Digi Locker
+                  Expanded(
+                    child: _buildNavigationCard(
+                      context: context,
+                      icon: Icons.folder_shared,
+                      title: 'Digi Locker',
+                      color: Colors.orange,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DigiLockerScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 20),
+              // Third Row: Meon IPO (centered single card)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: _buildNavigationCard(
+                      context: context,
+                      icon: Icons.trending_up,
+                      title: 'Meon IPO',
+                      color: Colors.teal,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MeonIPOScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
+      ),
       ),
     );
   }

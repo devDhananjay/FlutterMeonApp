@@ -66,10 +66,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_digilocker_aadhar_pan
-      sha256: "53b85edd9e7fa48aa13f01a1f20533b368a9b410614e03d8169579328c348b4e"
+      sha256: cfa121da5b72f723a05ef2e91656d7578913c1617ca725ce9732ce2183f87737
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   flutter_inappwebview:
     dependency: "direct main"
     description:
@@ -142,6 +142,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  flutter_meon_digilocker:
+    dependency: "direct main"
+    description:
+      name: flutter_meon_digilocker
+      sha256: fbaeed5fb5b95f1752ebff46b3e66733e435b761defa95dc76131fec8cee8f7c
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.3"
+  flutter_meon_ipo:
+    dependency: "direct main"
+    description:
+      name: flutter_meon_ipo
+      sha256: ca4b0844d59e5903b8d559b76e0c5400b721fa04b532c6f79e67ad61cb7b57a6
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   flutter_meon_kyc:
     dependency: "direct main"
     description:
@@ -164,10 +180,10 @@ packages:
     dependency: transitive
     description:
       name: http
-      sha256: fe7ab022b76f3034adc518fb6ea04a82387620e19977665ea18d30a1cf43442f
+      sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.0"
+    version: "1.6.0"
   http_parser:
     dependency: transitive
     description:
@@ -240,6 +256,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   path:
     dependency: transitive
     description:
@@ -268,10 +292,10 @@ packages:
     dependency: transitive
     description:
       name: permission_handler_apple
-      sha256: f84a188e79a35c687c132a0a0556c254747a08561e99ab933f12f6ca71ef3c98
+      sha256: f000131e755c54cf4d84a5d8bd6e4149e262cc31c5a8b1d698de1ac85fa41023
       url: "https://pub.dev"
     source: hosted
-    version: "9.4.6"
+    version: "9.4.7"
   permission_handler_html:
     dependency: transitive
     description:
@@ -304,6 +328,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  provider:
+    dependency: transitive
+    description:
+      name: provider
+      sha256: "4e82183fa20e5ca25703ead7e05de9e4cceed1fbd1eadc1ac3cb6f565a09f272"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.5+1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -457,10 +489,10 @@ packages:
     dependency: "direct main"
     description:
       name: webview_flutter
-      sha256: "889a0a678e7c793c308c68739996227c9661590605e70b1f6cf6b9a6634f7aec"
+      sha256: c3e4fe614b1c814950ad07186007eff2f2e5dd2935eba7b9a9a1af8e5885f1ba
       url: "https://pub.dev"
     source: hosted
-    version: "4.10.0"
+    version: "4.13.0"
   webview_flutter_android:
     dependency: transitive
     description:
@@ -481,10 +513,10 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_wkwebview
-      sha256: c49a98510080378b1525132f407a92c3dcd3b7145bef04fb8137724aadcf1cf0
+      sha256: fb46db8216131a3e55bcf44040ca808423539bc6732e7ed34fb6d8044e3d512f
       url: "https://pub.dev"
     source: hosted
-    version: "3.18.4"
+    version: "3.23.0"
 sdks:
   dart: ">=3.6.2 <4.0.0"
   flutter: ">=3.27.0"
