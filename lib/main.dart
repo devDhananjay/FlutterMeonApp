@@ -1,9 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart'; // Permissions handler
 import 'package:flutter_meon_kyc/flutter_meon_kyc.dart'; // KYC package
 import 'package:flutter_meon_rekyc/flutter_meon_rekyc.dart'; // Re-KYC package
 import 'package:flutter_inappwebview/flutter_inappwebview.dart'; // InAppWebView package
+import 'package:meon_face_verification/meon_face_verification.dart';
+import 'package:meon_ipo_flutter/meon_ipo_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,12 +16,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter KYC & Re-KYC App',
+      title: 'Flutter Meon App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const DefaultTabController(
+        length: 4,
+        child: HomeScreen(),
+      ),
     );
   }
 }
@@ -35,6 +39,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   TextEditingController clientIdController = TextEditingController();
   TextEditingController workflowIdController = TextEditingController();
+  TextEditingController ipoCompanyController =
+      TextEditingController(text: 'ndaindia');
 
   Future<bool> requestPermissions(BuildContext context) async {
     if (await Permission.camera.request().isDenied) {
@@ -78,30 +84,46 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter KYC & Re-KYC App'),
+        bottom: const TabBar(
+          tabs: [
+            Tab(text: 'Re-KYC'),
+            Tab(text: 'KYC'),
+            Tab(text: 'Face'),
+            Tab(text: 'IPO'),
+          ],
+        ),
       ),
-      body: Center(
+      body: TabBarView(
+        children: [
+          _buildReKycTab(context),
+          _buildKycTab(context),
+          _buildFaceTab(context),
+          _buildIpoTab(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReKycTab(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
-                controller: clientIdController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter Client ID',
-                  border: OutlineInputBorder(),
-                ),
+            TextField(
+              controller: clientIdController,
+              decoration: const InputDecoration(
+                labelText: 'Enter Client ID',
+                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
-                controller: workflowIdController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter Workflow ID',
-                  border: OutlineInputBorder(),
-                ),
+            TextField(
+              controller: workflowIdController,
+              decoration: const InputDecoration(
+                labelText: 'Enter Workflow ID',
+                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 20),
@@ -141,36 +163,105 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: const Text('Call Re-KYC SDK'),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKycTab(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () async {
+          bool permissionsGranted = await requestPermissions(context);
+          if (permissionsGranted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SDKCall(
+                  companyName: 'RKGLOBAL',
+                  workflowName: 'individual',
+                ),
+              ),
+            );
+          }
+        },
+        child: const Text('Call KYC SDK'),
+      ),
+    );
+  }
+
+  Widget _buildFaceTab(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () async {
+          bool permissionsGranted = await requestPermissions(context);
+          if (permissionsGranted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const FaceVerificationScreen(),
+              ),
+            );
+          }
+        },
+        child: const Text('Call Face Verification'),
+      ),
+    );
+  }
+
+  Widget _buildIpoTab(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: ipoCompanyController,
+              decoration: const InputDecoration(
+                labelText: 'Enter IPO Company Name',
+                hintText: 'ndaindia',
+                border: OutlineInputBorder(),
+              ),
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                bool permissionsGranted = await requestPermissions(context);
-                if (permissionsGranted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SDKCall(
-                        companyName: 'RKGLOBAL',
-                        workflowName: 'individual',
-                      ),
+                final company = ipoCompanyController.text.trim();
+                if (company.isEmpty) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Error'),
+                      content: const Text('Please enter a company name.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('OK'),
+                        ),
+                      ],
                     ),
                   );
+                  return;
                 }
+
+                await MeonIPO.instance.open(
+                  context,
+                  config: MeonIPOConfig(
+                    companyName: company,
+                    // Dynamically override base URL (optional)
+                    baseUrl: 'https://ipo.meon.co.in',
+                    mode: MeonIPOMode.inapp,
+                    // Customize header text and colors (all optional)
+                    headerTitle: 'IPO Portal',
+                    headerStartColor: const Color(0xFF1976D2),
+                    headerEndColor: const Color(0xFF0D47A1),
+                  ),
+                );
               },
-              child: const Text('Call KYC SDK'),
+              child: const Text('Call IPO SDK'),
             ),
-            const SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => WebViewScreen(),
-            //       ),
-            //     );
-            //   },
-            //   child: const Text('Open WebView'),
-            // ),
           ],
         ),
       ),
@@ -245,6 +336,34 @@ class _WebViewScreenState extends State<WebViewScreen> {
         title: Text('InAppWebView Example'),
       ),
       body: _webView,
+    );
+  }
+}
+
+class FaceVerificationScreen extends StatelessWidget {
+  const FaceVerificationScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: MeonFaceVerification(
+        clientId: '330JGFDI3MAAQ1',
+        clientSecret: '33034zBrVX0YZOhhYpWzevoU9BydUJ8ILIhNe4C6jNE1',
+        onSuccess: (data) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Face verification successful')),
+          );
+          Navigator.of(context).pop();
+        },
+        onError: (message) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $message')),
+          );
+        },
+        onClose: () {
+          Navigator.of(context).pop();
+        },
+      ),
     );
   }
 }

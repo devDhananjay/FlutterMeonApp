@@ -21,6 +21,11 @@ dependencies:
   flutter_meon_rekyc: ^1.0.2
   permission_handler: ^11.4.0
   flutter_inappwebview: ^6.1.5
+  meon_face_verification: ^0.1.2
+  meon_ipo_flutter: ^0.1.3
+  # After publishing to pub.dev, you can switch to: meon_face_verification: ^0.1.1
+  # meon_face_verification:
+  #   path: ../flutter-meon-face-verification-sdk
 
 
 dev_dependencies:
