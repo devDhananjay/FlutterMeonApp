@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart'; // Permissions handler
 import 'package:flutter_meon_kyc/flutter_meon_kyc.dart'; // KYC package
-import 'package:flutter_meon_rekyc/flutter_meon_rekyc.dart'; // Re-KYC package
+// import 'package:flutter_meon_rekyc/flutter_meon_rekyc.dart'; // Re-KYC package (temporarily disabled)
 import 'package:flutter_inappwebview/flutter_inappwebview.dart'; // InAppWebView package
+import 'package:url_launcher/url_launcher.dart';
 import 'package:meon_face_verification/meon_face_verification.dart';
 import 'package:meon_ipo_flutter/meon_ipo_flutter.dart';
 
@@ -105,65 +106,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildReKycTab(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: clientIdController,
-              decoration: const InputDecoration(
-                labelText: 'Enter Client ID',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: workflowIdController,
-              decoration: const InputDecoration(
-                labelText: 'Enter Workflow ID',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                bool permissionsGranted = await requestPermissions(context);
-                if (permissionsGranted) {
-                  String clientId = clientIdController.text;
-                  String workflowId = workflowIdController.text;
-                  if (clientId.isNotEmpty && workflowId.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SDKCallReKyc(
-                          clientId: clientId,
-                          workflowId: workflowId,
-                        ),
-                      ),
-                    );
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Error'),
-                        content: const Text(
-                            'Please fill in both Client ID and Workflow ID.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                }
-              },
-              child: const Text('Call Re-KYC SDK'),
-            ),
-          ],
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text(
+          'Re-KYC flow is temporarily disabled in this build.\n\n'
+          'Only KYC (firstdemat) flow is active with flutter_meon_kyc 2.0.4.',
+          textAlign: TextAlign.center,
         ),
       ),
     );
@@ -173,18 +122,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return Center(
       child: ElevatedButton(
         onPressed: () async {
-          bool permissionsGranted = await requestPermissions(context);
-          if (permissionsGranted) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SDKCall(
-                  companyName: 'RKGLOBAL',
-                  workflowName: 'individual',
-                ),
-              ),
-            );
-          }
+          final permissionsGranted = await requestPermissions(context);
+          if (!permissionsGranted) return;
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const KYCScreen(),
+            ),
+          );
         },
         child: const Text('Call KYC SDK'),
       ),
@@ -271,71 +217,187 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // ✅ **Updated WebView with JavaScript & Autoplay Support**
 class WebViewScreen extends StatefulWidget {
+  const WebViewScreen({super.key});
+
   @override
-  _WebViewScreenState createState() => _WebViewScreenState();
+  State<WebViewScreen> createState() => _WebViewScreenState();
 }
 
 class _WebViewScreenState extends State<WebViewScreen> {
-  late final InAppWebView _webView;
+  InAppWebViewController? _controller;
+
+  final InAppWebViewGroupOptions _options = InAppWebViewGroupOptions(
+    crossPlatform: InAppWebViewOptions(
+      javaScriptEnabled: true,
+      mediaPlaybackRequiresUserGesture: false,
+    ),
+    ios: IOSInAppWebViewOptions(
+      allowsInlineMediaPlayback: true,
+    ),
+    android: AndroidInAppWebViewOptions(
+      allowFileAccess: true,
+      allowContentAccess: true,
+      useHybridComposition: true,
+      geolocationEnabled: true,
+    ),
+  );
 
   @override
-  void initState() {
-    super.initState();
-    _webView = InAppWebView(
-      initialUrlRequest: URLRequest(
-        url: WebUri(
-          'https://rekyc.meon.co.in//v1/company/lkpsec/modification/login?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0Mjk4MzU1OSwiaWF0IjoxNzQyMzc4NzU5LCJqdGkiOiJkYTUwZWQzODA2ZTg0NTdlYTAzYjA2ODRhZWU0NjdiOCIsInVzZXJfaWQiOiI4NjM3YzNiYi03YjA4LTQwZjQtYjAzYS03ZDE4ZGRlMmFkNmYifQ.8Ak5Ni2E_DVSiXcLbSYChb_rsT-yLYVyes2crUH9RnU&redirect_to=/v1/user/Others/page',
-        ),
-      ),
-      onWebViewCreated: (controller) {
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (_controller != null && await _controller!.canGoBack()) {
+          await _controller!.goBack();
+          return false;
+        }
+        return true;
       },
-      initialOptions: InAppWebViewGroupOptions(
-        crossPlatform: InAppWebViewOptions(
-          javaScriptEnabled: true,
-          mediaPlaybackRequiresUserGesture: false, // ✅ Autoplay enabled for both Android and iOS
-          // geolocationEnabled: true,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('UPI Payment Verification'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () async {
+              if (_controller != null && await _controller!.canGoBack()) {
+                await _controller!.goBack();
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
+          ),
         ),
-      ios: IOSInAppWebViewOptions(
-        allowsInlineMediaPlayback: true,
-      ),
-      android: AndroidInAppWebViewOptions(
-          allowFileAccess: true,
-          allowContentAccess: true,
-          useHybridComposition: true,
-          geolocationEnabled: true,
+        body: InAppWebView(
+          initialUrlRequest: URLRequest(
+            url: WebUri(
+              'https://rekyc.meon.co.in//v1/company/lkpsec/modification/login?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0Mjk4MzU1OSwiaWF0IjoxNzQyMzc4NzU5LCJqdGkiOiJkYTUwZWQzODA2ZTg0NTdlYTAzYjA2ODRhZWU0NjdiOCIsInVzZXJfaWQiOiI4NjM3YzNiYi03YjA4LTQwZjQtYjAzYS03ZDE4ZGRlMmFkNmYifQ.8Ak5Ni2E_DVSiXcLbSYChb_rsT-yLYVyes2crUH9RnU&redirect_to=/v1/user/Others/page',
+            ),
+          ),
+          initialOptions: _options,
+          onWebViewCreated: (controller) {
+            _controller = controller;
+          },
+          onConsoleMessage: (controller, consoleMessage) {
+            // ignore: avoid_print
+            print(consoleMessage.message);
+          },
+          onJsAlert: (controller, jsAlertRequest) async {
+            return JsAlertResponse(handledByClient: true);
+          },
+          onPermissionRequest: (controller, request) async {
+            // ignore: avoid_print
+            print('Permission requested: ${request.resources}');
+            return PermissionResponse(
+              resources: request.resources,
+              action: PermissionResponseAction.GRANT,
+            );
+          },
+          onGeolocationPermissionsShowPrompt: (controller, origin) async {
+            return GeolocationPermissionShowPromptResponse(
+              origin: origin,
+              allow: true,
+              retain: true,
+            );
+          },
+          shouldOverrideUrlLoading: (controller, navigationAction) async {
+            final uri = navigationAction.request.url;
+            if (uri == null) {
+              return NavigationActionPolicy.ALLOW;
+            }
+
+            final scheme = uri.scheme.toLowerCase();
+
+            if (scheme == 'http' || scheme == 'https') {
+              return NavigationActionPolicy.ALLOW;
+            }
+
+            const upiSchemes = <String>{
+              'upi',
+              'bhim',
+              'gpay',
+              'paytm',
+              'phonepe',
+              'whatsapp',
+              'whatsapp-business',
+            };
+
+            if (upiSchemes.contains(scheme) ||
+                (scheme.isNotEmpty && scheme != 'about')) {
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(
+                  uri,
+                  mode: LaunchMode.externalApplication,
+                );
+              }
+              return NavigationActionPolicy.CANCEL;
+            }
+
+            return NavigationActionPolicy.ALLOW;
+          },
+          onLoadStop: (controller, url) async {
+            // Fix iOS zooming on text inputs by enforcing viewport and font size
+            await controller.evaluateJavascript(source: """
+              (function() {
+                var meta = document.querySelector('meta[name=viewport]');
+                if (!meta) {
+                  meta = document.createElement('meta');
+                  meta.name = 'viewport';
+                  document.head.appendChild(meta);
+                }
+                meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+              })();
+            """);
+
+            await controller.evaluateJavascript(source: """
+              (function() {
+                var elements = document.querySelectorAll('input, textarea, select');
+                for (var i = 0; i < elements.length; i++) {
+                  var el = elements[i];
+                  var style = window.getComputedStyle(el);
+                  var size = parseFloat(style.fontSize || '16');
+                  if (size < 16) {
+                    el.style.fontSize = '16px';
+                  }
+                }
+              })();
+            """);
+          },
         ),
       ),
-      onConsoleMessage: (controller, consoleMessage) {
-      print(consoleMessage.message);
-    },
-    onJsAlert: (controller, jsAlertRequest) async {
-      return JsAlertResponse(handledByClient: true);
-    },
-    onPermissionRequest: (controller, request) async {
-      print("Permission requested: ${request.resources}");
-      // ✅ Grant Camera & Microphone permissions explicitly
-      return PermissionResponse(
-        resources: request.resources,
-        action: PermissionResponseAction.GRANT,
-      );
-    },
-    onGeolocationPermissionsShowPrompt: (controller, origin) async {
-        return GeolocationPermissionShowPromptResponse(
-          origin: origin, // ✅ Required parameter
-          allow: true, // ✅ Allow location access
-          retain: true, // ✅ Save permission state
-        );
-      },
     );
   }
+}
+
+class KYCScreen extends StatelessWidget {
+  const KYCScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('InAppWebView Example'),
+      body: MeonKYC(
+        companyName: 'firstdemat',
+        workflow: 'individual_uat',
+        enablePayments: true,
+        autoRequestPermissions: true,
+        enableCameraPermission: true,
+        enableMicrophonePermission: true,
+        enableLocationPermission: true,
+        showHeader: true,
+        headerTitle: 'UPI Payment Verification',
+        onSuccess: (data) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('KYC completed successfully')),
+          );
+          Navigator.of(context).pop();
+        },
+        onError: (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $error')),
+          );
+        },
+        onClose: () {
+          Navigator.of(context).pop();
+        },
       ),
-      body: _webView,
     );
   }
 }
