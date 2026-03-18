@@ -378,11 +378,8 @@ class KYCScreen extends StatelessWidget {
         workflow: 'individual_uat',
         enablePayments: true,
         autoRequestPermissions: true,
-        enableCameraPermission: true,
-        enableMicrophonePermission: true,
-        enableLocationPermission: true,
         showHeader: true,
-        headerTitle: 'UPI Payment Verification',
+        headerTitle: 'KYC Process',
         onSuccess: (data) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('KYC completed successfully')),

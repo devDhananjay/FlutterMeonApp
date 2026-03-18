@@ -17,8 +17,9 @@ dependencies:
   # webview_flutter: ^3.0.0
   webview_flutter: ^4.4.4
   cupertino_icons: ^1.0.8
-  flutter_meon_kyc: ^2.0.4
-  # flutter_meon_rekyc: ^1.0.2  # Temporarily disabled to avoid logger conflict
+  flutter_meon_kyc: ^2.0.6
+  # flutter_meon_kyc:
+  #   path: ../Flutter_Meon_Kyc_Sdk
   permission_handler: ^11.4.0
   flutter_inappwebview: ^6.1.5
   meon_face_verification: ^0.1.2
