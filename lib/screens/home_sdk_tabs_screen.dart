@@ -19,10 +19,11 @@ class HomeSdkTabsScreen extends StatelessWidget {
             isScrollable: true,
             tabs: [
               Tab(text: 'KYC'),
-              Tab(text: 'Face'),
+              Tab(text: 'Face-Finder'),
+              Tab(text: 'E -doc Retrieval'),
+              Tab(text: 'Digilocker A/P'),
               Tab(text: 'IPO'),
-              Tab(text: 'Digi A/P'),
-              Tab(text: 'Meon Digi'),
+             
             ],
           ),
         ),
@@ -30,9 +31,10 @@ class HomeSdkTabsScreen extends StatelessWidget {
           children: [
             KycSdkLauncher(),
             FaceSdkLauncher(),
-            IpoSdkLauncher(),
             DigiLockerApLauncher(),
             MeonDigilockerLauncher(),
+            IpoSdkLauncher(),
+           
           ],
         ),
       ),
