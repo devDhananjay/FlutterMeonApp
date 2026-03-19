@@ -6,6 +6,9 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart'; // InAppWebView
 import 'package:url_launcher/url_launcher.dart';
 import 'package:meon_face_verification/meon_face_verification.dart';
 import 'package:meon_ipo_flutter/meon_ipo_flutter.dart';
+import 'package:flutter_digilocker_aadhar_pan/flutter_digilocker_aadhar_pan.dart';
+import 'package:flutter_meon_digilocker/meon_digilocker_sdk.dart';
+import 'package:kyc_flutter_app/screens/home_sdk_tabs_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,10 +25,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const DefaultTabController(
-        length: 4,
-        child: HomeScreen(),
-      ),
+      home: const HomeSdkTabsScreen(),
     );
   }
 }
@@ -84,21 +84,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter KYC & Re-KYC App'),
+        title: const Text('Flutter Meon App'),
         bottom: const TabBar(
           tabs: [
-            Tab(text: 'Re-KYC'),
+            // Tab(text: 'Re-KYC'),
             Tab(text: 'KYC'),
-            Tab(text: 'Face'),
+            Tab(text: 'Face-Finder'),
+            Tab(text: 'Digilocker A/P'),
+            Tab(text: 'Meon Digilocker'),
             Tab(text: 'IPO'),
           ],
         ),
       ),
       body: TabBarView(
         children: [
-          _buildReKycTab(context),
+          // _buildReKycTab(context),
           _buildKycTab(context),
           _buildFaceTab(context),
+          _buildDigiLockerAadharPanTab(context),
+          _buildMeonDigilockerTab(context),
           _buildIpoTab(context),
         ],
       ),
@@ -156,7 +160,61 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildIpoTab(BuildContext context) {
+
+
+  Widget _buildDigiLockerAadharPanTab(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () async {
+          final config = DigiLockerConfig(
+            companyName: 'democapital',
+            secretToken: 'cy7Kw2rWqdzVo2KPxlU0ymd9uRQKPSsb',
+            redirectUrl: 'https://meon.co.in',
+          );
+
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => DigiLockerAadharPanScreen(config: config),
+            ),
+          );
+
+          if (!context.mounted) return;
+          if (result is DigiLockerResponse) {
+            debugPrint('DigiLocker Success: ${result.toJson()}');
+            debugPrint('Name: ${result.data?.name}');
+            debugPrint('Aadhar: ${result.data?.aadharNo}');
+            debugPrint('PAN: ${result.data?.panNumber}');
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('DigiLocker (Aadhar/PAN) success'),
+              ),
+            );
+          }
+        },
+        child: const Text('Open DigiLocker Aadhar/PAN'),
+      ),
+    );
+  }
+
+  Widget _buildMeonDigilockerTab(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const MeonDigilockerScreen(),
+            ),
+          );
+        },
+        child: const Text('Open Meon DigiLocker'),
+      ),
+    );
+  }
+
+    Widget _buildIpoTab(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -210,6 +268,65 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+}
+
+class DigiLockerAadharPanScreen extends StatelessWidget {
+  final DigiLockerConfig config;
+
+  const DigiLockerAadharPanScreen({super.key, required this.config});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('DigiLocker Aadhar/PAN'),
+      ),
+      body: DigiLockerWidget(
+        config: config,
+        onSuccess: (response) {
+          // Close SDK screen immediately and return full response to caller.
+          Navigator.of(context).pop(response);
+        },
+        onError: (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('DigiLocker error: $error'),
+            ),
+          );
+        },
+        onClose: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+}
+
+class MeonDigilockerScreen extends StatelessWidget {
+  const MeonDigilockerScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Meon DigiLocker')),
+      body: DigilockerForm(
+        companyName: 'democapital',
+        secretToken: 'cy7Kw2rWqdzVo2KPxlU0ymd9uRQKPSsb',
+        onSuccess: (response) {
+          debugPrint('Meon DigiLocker Success: ${response.toJson()}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Meon DigiLocker completed successfully')),
+          );
+        },
+        onError: (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Meon DigiLocker error: $error')),
+          );
+        },
       ),
     );
   }

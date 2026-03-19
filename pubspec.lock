@@ -70,6 +70,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_digilocker_aadhar_pan:
+    dependency: "direct main"
+    description:
+      name: flutter_digilocker_aadhar_pan
+      sha256: cfa121da5b72f723a05ef2e91656d7578913c1617ca725ce9732ce2183f87737
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   flutter_inappwebview:
     dependency: "direct main"
     description:
@@ -142,13 +150,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  flutter_meon_digilocker:
+    dependency: "direct main"
+    description:
+      name: flutter_meon_digilocker
+      sha256: fbaeed5fb5b95f1752ebff46b3e66733e435b761defa95dc76131fec8cee8f7c
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.3"
   flutter_meon_kyc:
     dependency: "direct main"
     description:
-      path: "../Flutter_Meon_Kyc_Sdk"
-      relative: true
-    source: path
-    version: "2.0.5"
+      name: flutter_meon_kyc
+      sha256: "4aabc5d0376038c003276e3f8fc2f3dcdf2cebf6c8bfea04522fff2d3a041356"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.6"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -255,6 +272,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.0"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   path:
     dependency: transitive
     description:
@@ -327,6 +352,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  provider:
+    dependency: transitive
+    description:
+      name: provider
+      sha256: "4e82183fa20e5ca25703ead7e05de9e4cceed1fbd1eadc1ac3cb6f565a09f272"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.5+1"
   sky_engine:
     dependency: transitive
     description: flutter
